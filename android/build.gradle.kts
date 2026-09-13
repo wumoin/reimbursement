@@ -1,5 +1,9 @@
+import com.android.build.api.dsl.LibraryExtension
+
 allprojects {
     repositories {
+        maven { url = uri("https://maven.aliyun.com/repository/google") }
+        maven { url = uri("https://maven.aliyun.com/repository/public") }
         google()
         mavenCentral()
     }
@@ -17,6 +21,17 @@ subprojects {
 }
 subprojects {
     project.evaluationDependsOn(":app")
+}
+
+// A transitive path provider module still declares API 35. Align all Android
+// library modules to the app's API 36 so a fresh build does not need a second
+// SDK platform installed locally.
+subprojects {
+    plugins.withId("com.android.library") {
+        extensions.configure<LibraryExtension> {
+            compileSdk = 36
+        }
+    }
 }
 
 tasks.register<Delete>("clean") {
